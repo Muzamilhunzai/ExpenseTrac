@@ -1,0 +1,28 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "An expresnse for one user",
+  "homepage": "https://github.com/Muzamilhunzai/ExpenseTrac#readme",
+  "bugs": {
+    "url": "https://github.com/Muzamilhunzai/ExpenseTrac/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Muzamilhunzai/ExpenseTrac.git"
+  },
+  "license": "ISC",
+  "author": "Muzamil",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "axios": "^1.14.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongoose": "^9.3.3",
+    "nodemon": "^3.1.14"
+  }
+}
