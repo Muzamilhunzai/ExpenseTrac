@@ -1,92 +1,54 @@
-import { Transaction } from "../../models/Transaction";
+import {
+  getSpendingTrends,
+  getRecentLogs,
+  getOutboundStream,
+  getInboundStream,
+  getTotalNodeLiquidity
+} from '../../services/dashboard';
 
-export const totalnodeliquidity = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const transactions = await Transaction.find({ userId });
+import { asyncHandler } from '../../utils/asyncHandler.js';
 
-    const totalIncome = transactions
-      .filter((t) => t.type === "income")
-      .reduce((sum, t) => sum + t.amount, 0);
-    const totalExpense = transactions
-      .filter((t) => t.type === "expense")
-      .reduce((sum, t) => sum + t.amount, 0);
+export const spendingTrends = asyncHandler(async (req, res) => {
+  const data = await getSpendingTrends(req.user._id);
 
-    const netLiquidity = totalIncome - totalExpense;
+  res.status(200).json({
+    success: true,
+    data
+  });
+});
 
-    res.json({ netLiquidity });
-  }
-    catch (error) {
-        res.status(500).json({ error: "Failed to calculate liquidity" });
-    }
-}
+export const recentLogs = asyncHandler(async (req, res) => {
+  const data = await getRecentLogs(req.user._id);
 
-export const Inboundstream = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const transactions = await Transaction.find({ userId, type: "income" });
-        res.json({ inboundStream: transactions });
-    }
-    catch (error) {
-        res.status(500).json({ error: "Failed to fetch inbound stream" });
-    }
-}
+  res.status(200).json({
+    success: true,
+    data
+  });
+});
 
-export const Outboundstream = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const transactions = await Transaction.find({ userId, type: "expense" });
-        res.json({ outboundStream: transactions });
-    }
-    catch (error) {
-        res.status(500).json({ error: "Failed to fetch outbound stream" });
-    }
-}
+export const outboundStream = asyncHandler(async (req, res) => {
+  const data = await getOutboundStream(req.user._id);
 
-export const Recentlogs= async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const transactions = await Transaction.find({ userId }).sort({ date: -1 }).limit(10);
-        res.json({ recentLogs: transactions });
-    }
-    catch (error) {
-        res.status(500).json({ error: "Failed to fetch recent logs" });
-    }
-}
+  res.status(200).json({
+    success: true,
+    data
+  });
+});
 
-export const SpendingTrends = async (req, res) => {
-  try {
-    const userId = req.user._id;
+export const inboundStream = asyncHandler(async (req, res) => {
+  const data = await getInboundStream(req.user._id);
 
-    const transactions = await Transaction.find({
-      userId,
-      type: "expense",
-    });
+  res.status(200).json({
+    success: true,
+    data
+  });
+});
 
-    const monthsOrder = [
-      "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-      "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
-    ];
+export const totalNodeLiquidity = asyncHandler(async (req, res) => {
+  const data = await getTotalNodeLiquidity(req.user._id);
 
-    const monthlyTotals = {
-      JAN: 0, FEB: 0, MAR: 0, APR: 0,
-      MAY: 0, JUN: 0, JUL: 0, AUG: 0,
-      SEP: 0, OCT: 0, NOV: 0, DEC: 0
-    };
-
-    transactions.forEach((t) => {
-      const date = new Date(t.date);
-      const monthIndex = date.getMonth();
-      const monthName = monthsOrder[monthIndex];
-      monthlyTotals[monthName] += t.amount;
-    });
-
-    const labels = monthsOrder;
-    const data = monthsOrder.map((month) => monthlyTotals[month]);
-
-    res.json({ labels, data });
-
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch spending trends" });
-  }
-};
+  res.status(200).json({
+    success: true,
+    data
+  });
+});
