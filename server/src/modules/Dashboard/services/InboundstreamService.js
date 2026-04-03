@@ -1,4 +1,4 @@
-import { Transaction } from "../../models/Transaction";
+import { Transaction } from "../../../models/Transaction";
 
 export const Inboundstream = async (req, res) => {
     try {

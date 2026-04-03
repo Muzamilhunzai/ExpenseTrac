@@ -1,4 +1,4 @@
-import { Transaction } from "../../models/Transaction";
+import { Transaction } from "../../../models/Transaction";
 export const Outboundstream = async (req, res) => {
     try {
         const userId = req.user._id;

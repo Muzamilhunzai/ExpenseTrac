@@ -1,5 +1,5 @@
-import Transaction from "../../models/Transaction.js";
-import { AppError } from "../../utils/AppError.js";
+import Transaction from "../../../models/Transaction.js";
+import { AppError } from "../../../common/utils/AppError.js";
 
 class AddTransactionService {
     async execute(data, userId) {
