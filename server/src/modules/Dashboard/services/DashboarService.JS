@@ -1,9 +1,8 @@
-// services/AnalyticsService.js
-import totalnodeliquidity from './totalnodeliquidityService.js';
-import inboundStream from './inboundStreamService.js';
-import outboundStream from './outboundStreamService.js';
-import recentLogs from './recentLogsService.js';
-import SpendingTrends from './spendingTrendsService.js';
+import totalnodeliquidity from './totalnodeliquidityService';
+import inboundStream from './inboundStreamService';
+import outboundStream from './outboundStreamService';
+import recentLogs from './recentLogsService';
+import SpendingTrends from './spendingTrendsService';
 
 export const getDashboardAnalytics = async (userId) => {
   if (!userId) {
