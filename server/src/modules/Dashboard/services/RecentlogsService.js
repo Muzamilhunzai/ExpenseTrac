@@ -1,14 +1,23 @@
-import { Transaction } from "../../../models/Transaction";
+import { Transaction } from '../../../models/Transaction';
+import mongoose from 'mongoose';
 
+const recentLogs = async ({ userId }) => {
+  if (!userId) {
+    throw new Error('userId is required');
+  }
 
+  const userObjectId = new mongoose.Types.ObjectId(userId);
 
-export const Recentlogs= async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const transactions = await Transaction.find({ userId }).sort({ date: -1 }).limit(10);
-        res.json({ recentLogs: transactions });
-    }
-    catch (error) {
-        res.status(500).json({ error: "Failed to fetch recent logs" });
-    }
-}
+  const transactions = await Transaction.find({ 
+    userId: userObjectId 
+  })
+    .sort({ date: -1 })
+    .limit(10)
+    .select('title description category amount type date paymentMethod icon');
+
+  return {
+    recentLogs: transactions
+  };
+};
+
+export default recentLogs;

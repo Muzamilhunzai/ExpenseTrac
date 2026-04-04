@@ -1,43 +1,27 @@
-import totalnodeliquidity from '../services/totalnodeliquidityService.js';
-import inboundStream from '../services/inboundStreamService.js';
-import outboundStream from '../services/outboundStreamService.js';
-import recentLogs from '../services/recentLogsService.js';
-import SpendingTrends from '../services/spendingTrendsService.js';
+// app/api/analytics/route.js
+import getDashboardAnalytics from '@/services/DashboarServicejs';
+import { getServerSession } from 'next-auth';
+import { NextResponse } from 'next/server';
 
-export const getDashboardAnalytics = async (userId, timeRange = 'monthly') => {
-  if (!userId) {
-    throw new Error('userId is required for analytics');
+export async function GET(request) {
+  try {
+    const session = await getServerSession();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const analytics = await getDashboardAnalytics(session.user.id);
+
+    return NextResponse.json({
+      success: true,
+      data: analytics,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('[Analytics Controller] Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch dashboard analytics', message: error.message },
+      { status: 500 }
+    );
   }
-
-  // Run everything in parallel for maximum performance (no waterfall)
-  const [totalLiquidity, inbound, outbound, logs, trends] = await Promise.all([
-    totalnodeliquidity({ userId, timeRange }),
-    inboundStream({ userId, timeRange }),
-    outboundStream({ userId, timeRange }),
-    recentLogs({ userId, timeRange }),
-    SpendingTrends({ userId, timeRange }), // note: your default export name
-  ]);
-
-  // Cross-service calculations go here (single responsibility)
-  const efficiencyScore = calculateEfficiencyScore(inbound, outbound);
-
-  return {
-    totalNodeLiquidity: totalLiquidity,     // normalized name for frontend
-    inboundStream: inbound,
-    outboundStream: outbound,
-    recentLogs: logs,
-    spendingTrends: trends,
-    efficiencyScore,
-    summary: {
-      totalIncome: inbound?.total ?? 0,
-      totalExpense: outbound?.total ?? 0,
-      netFlow: (inbound?.total ?? 0) - (outbound?.total ?? 0),
-    },
-  };
-};
-
-// Small private helper — stays inside this service
-function calculateEfficiencyScore(inbound, outbound) {
-  const total = (inbound?.total ?? 0) + (outbound?.total ?? 0);
-  return total > 0 ? Math.round(((inbound?.total ?? 0) / total) * 100) : 0;
 }
